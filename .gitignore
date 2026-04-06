@@ -1,0 +1,80 @@
+# RTL/验证项目通用忽略规则
+
+# 仿真工具生成文件
+sim_build/
+*.vcd
+*.fsdb
+*.shm
+*.log
+results.xml
+*.wdb
+*.wlf
+
+# Python相关
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+ENV/
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 综合工具生成文件
+*.ddc
+*.svf
+*.sdf
+*.sdc
+*.sdf
+*.db
+*.mr
+*.log
+*.syn*
+*.vqm
+*.rpt
+*.tcl
+*.pt*
+
+# Lint工具生成文件
+*.rdb
+*.rdb.*
+nLint.exeLog/
+fp_mac_lint*.txt
+
+# 临时文件
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# 二进制文件
+*.o
+*.so
+*.dll
+*.exe
+
+# 文档生成文件
+*.aux
+*.log
+*.toc
+*.out
+*.pdf
+
+# 测试覆盖率文件
+*.ucdb
+*.cov
+
+# Cocotb特定
+cmds.f
+cocotb_iverilog_dump.v

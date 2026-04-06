@@ -1,5 +1,8 @@
 # RTL/验证项目通用忽略规则
 
+# Claude Code本地配置
+.claude/settings.local.json
+
 # 仿真工具生成文件
 sim_build/
 *.vcd

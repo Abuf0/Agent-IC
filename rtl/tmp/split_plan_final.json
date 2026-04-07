@@ -1,0 +1,59 @@
+{
+  "splits": [
+    {
+      "file": "fp_mac_stage1.sv",
+      "include_modules": ["fp_mac_stage1"],
+      "lines": 180,
+      "start_line": 1,
+      "end_line": 180,
+      "action": "extract",
+      "description": "Stage 1: 输入解码、特殊值处理、指数计算、隐藏位添加"
+    },
+    {
+      "file": "fp_mac_stage2.sv",
+      "include_modules": ["fp_mac_stage2"],
+      "lines": 200,
+      "start_line": 181,
+      "end_line": 380,
+      "action": "extract",
+      "description": "Stage 2: 乘法器实例、尾数对齐、指数差计算"
+    },
+    {
+      "file": "fp_mac_stage3.sv",
+      "include_modules": ["fp_mac_stage3"],
+      "lines": 250,
+      "start_line": 381,
+      "end_line": 630,
+      "action": "extract",
+      "description": "Stage 3: 加法、符号处理、前导零计数(LZC)"
+    },
+    {
+      "file": "fp_mac_stage4.sv",
+      "include_modules": ["fp_mac_stage4"],
+      "lines": 250,
+      "start_line": 631,
+      "end_line": 880,
+      "action": "extract",
+      "description": "Stage 4: 规格化、舍入、溢出处理、输出选择"
+    },
+    {
+      "file": "fp_mac_top.sv",
+      "include_modules": ["fp_mac"],
+      "lines": 50,
+      "action": "keep",
+      "description": "顶层模块，集成所有流水线阶段"
+    }
+  ],
+  "warnings": [
+    "需要仔细处理流水线阶段间的接口信号",
+    "原模块中的临时wire定义可能需要重新组织",
+    "建议保持原始流水线时序不变"
+  ],
+  "parameters": {
+    "max_lines_per_file": 1000,
+    "preserve_fsm": true,
+    "max_cross_calls": 10
+  },
+  "original_file": "rtl/fp_mac.sv",
+  "parse_method": "regex_approx"
+}

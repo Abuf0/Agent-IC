@@ -1,6 +1,6 @@
 // Generator : SpinalHDL v1.9.0    git head : 7d30dbacbd3aa1be42fb2a3d4da5675703aae2ae
 // Component : fp_mac
-// Git hash  : bacbf9dab6b29b205cdd5ed1c172fdbd1f21749c
+// Git hash  : c982d0aac03e1ed897d6c33309713a5773bade24
 
 `timescale 1ns/1ps 
 module fp_mac (
@@ -9,18 +9,23 @@ module fp_mac (
   input      [31:0]   io_c,
   input      [2:0]    io_rnd,
   output reg [31:0]   io_z,
-  output reg [7:0]    io_status
+  output reg [7:0]    io_status,
+  input               clk,
+  input               resetn
 );
 
+  wire       [23:0]   man_booth4_io_a;
+  wire       [23:0]   man_booth4_io_b;
+  wire       [47:0]   man_booth4_io_z;
   wire       [0:0]    tmp_a_hidden;
   wire       [0:0]    tmp_b_hidden;
   wire       [0:0]    tmp_c_hidden;
   wire       [7:0]    tmp_product_exp;
+  wire       [95:0]   tmp_c_man_ext;
+  wire       [71:0]   tmp_c_man_ext_1;
   wire       [95:0]   tmp_product_man;
   wire       [71:0]   tmp_product_man_1;
   wire       [47:0]   tmp_product_man_2;
-  wire       [95:0]   tmp_c_man_ext;
-  wire       [71:0]   tmp_c_man_ext_1;
   wire       [71:0]   tmp_c_man_shift;
   wire       [71:0]   tmp_product_shift;
   wire       [94:0]   tmp_c_man_align;
@@ -30,16 +35,12 @@ module fp_mac (
   wire       [72:0]   tmp_c_val;
   wire       [73:0]   tmp_sum_man;
   wire       [73:0]   tmp_sum_man_1;
-  wire       [73:0]   tmp_sum_man_abs;
-  wire       [73:0]   tmp_sum_man_abs_1;
-  wire       [73:0]   tmp_sum_man_abs_2;
-  wire       [73:0]   tmp_sum_man_abs_3;
-  wire       [0:0]    tmp_sum_man_abs_4;
-  wire       [73:0]   tmp_sum_man_overflow;
-  wire       [73:0]   tmp_sum_man_overflow_1;
-  wire       [73:0]   tmp_sum_man_overflow_2;
-  wire       [73:0]   tmp_sum_man_overflow_3;
-  wire       [0:0]    tmp_sum_man_overflow_4;
+  wire       [73:0]   tmp_sum_man_abs_all;
+  wire       [73:0]   tmp_sum_man_abs_all_1;
+  wire       [73:0]   tmp_sum_man_abs_all_2;
+  wire       [0:0]    tmp_sum_man_abs_all_3;
+  wire       [73:0]   tmp_sum_man_sign_r3;
+  wire       [73:0]   tmp_sum_man_sign_r3_1;
   wire       [71:0]   tmp_sum_man_vec_0;
   wire       [71:0]   tmp_sum_man_vec_1;
   wire       [71:0]   tmp_sum_man_vec_2;
@@ -131,13 +132,8 @@ module fp_mac (
   wire       [6:0]    tmp_lzc_real;
   wire       [71:0]   tmp_norm_man;
   wire       [71:0]   tmp_norm_man_1;
-  wire       [73:0]   tmp_norm_man_2;
-  wire       [73:0]   tmp_norm_man_3;
-  wire       [73:0]   tmp_norm_man_4;
-  wire       [73:0]   tmp_norm_man_5;
-  wire       [0:0]    tmp_norm_man_6;
-  wire       [71:0]   tmp_norm_man_7;
-  wire       [198:0]  tmp_norm_man_8;
+  wire       [71:0]   tmp_norm_man_2;
+  wire       [198:0]  tmp_norm_man_3;
   wire       [7:0]    tmp_result_exp;
   wire       [7:0]    tmp_result_exp_1;
   wire       [7:0]    tmp_result_exp_2;
@@ -145,8 +141,6 @@ module fp_mac (
   wire       [0:0]    tmp_result_exp_4;
   wire       [7:0]    tmp_result_exp_5;
   wire       [0:0]    tmp_result_exp_6;
-  wire       [73:0]   tmp_result_sign;
-  wire       [73:0]   tmp_when_fp_mac_l151;
   wire       [0:0]    tmp_round_up_1;
   wire       [22:0]   tmp_man_rounded;
   wire       [0:0]    tmp_man_rounded_1;
@@ -190,19 +184,49 @@ module fp_mac (
   wire       [7:0]    product_exp;
   wire                exp_diff_dir;
   reg        [7:0]    exp_diff;
+  reg        [23:0]   a_man_1_r1;
+  reg        [23:0]   b_man_1_r1;
+  reg        [23:0]   c_man_1_r1;
+  reg                 exp_diff_dir_r1;
+  reg        [7:0]    exp_diff_r1;
+  reg        [7:0]    product_exp_r1;
+  reg        [7:0]    c_exp_r1;
+  reg                 product_sign_r1;
+  reg                 c_sign_r1;
+  reg                 output_nan_inf_r1;
+  reg                 inf_sign_r1;
+  reg                 a_b_inf_r1;
+  reg                 c_is_inf_r1;
+  wire       [71:0]   c_man_ext;
   wire       [71:0]   product_man;
   reg        [71:0]   product_shift;
   reg        [71:0]   c_man_shift;
-  wire       [71:0]   c_man_ext;
-  wire                when_fp_mac_l93;
-  wire                when_fp_mac_l100;
+  wire                when_fp_mac_l120;
+  wire                when_fp_mac_l127;
   wire       [71:0]   c_man_align;
   wire       [7:0]    product_exp_shift;
+  reg        [71:0]   c_man_align_r2;
+  reg        [7:0]    product_exp_shift_r2;
+  reg        [71:0]   product_man_align_r2;
+  reg                 product_sign_r2;
+  reg                 c_sign_r2;
+  reg                 output_nan_inf_r2;
+  reg                 inf_sign_r2;
+  reg                 a_b_inf_r2;
+  reg                 c_is_inf_r2;
   wire       [72:0]   prod_mag_s;
   wire       [72:0]   c_mag_s;
   wire       [72:0]   prod_val;
   wire       [72:0]   c_val;
   wire       [73:0]   sum_man;
+  wire       [73:0]   sum_man_abs_all;
+  reg        [73:0]   sum_man_abs_all_r3;
+  reg        [7:0]    product_exp_shift_r3;
+  reg                 output_nan_inf_r3;
+  reg                 inf_sign_r3;
+  reg                 a_b_inf_r3;
+  reg                 c_is_inf_r3;
+  reg                 sum_man_sign_r3;
   wire       [71:0]   sum_man_abs;
   wire                sum_man_overflow;
   wire                sum_man_vec_0;
@@ -354,11 +378,22 @@ module fp_mac (
   wire                lzc_large_subnormal;
   wire                lzc_huge_zero;
   wire                lzc_normal;
+  reg        [6:0]    lzc_real_r4;
+  reg        [73:0]   sum_man_abs_all_r4;
+  reg        [7:0]    product_exp_shift_r4;
+  reg                 output_nan_inf_r4;
+  reg                 inf_sign_r4;
+  reg                 a_b_inf_r4;
+  reg                 c_is_inf_r4;
+  reg                 sum_man_sign_r4;
+  reg                 lzc_large_subnormal_r4;
+  reg                 lzc_huge_zero_r4;
+  reg                 lzc_normal_r4;
+  wire       [71:0]   sum_man_abs_r4;
+  wire                sum_man_overflow_r4;
   wire       [71:0]   norm_man;
   wire       [7:0]    result_exp;
   wire       [23:0]   result_man;
-  reg                 result_sign;
-  wire                when_fp_mac_l151;
   wire                guard_bit;
   wire                round_bit;
   wire                sticky_bit;
@@ -373,7 +408,7 @@ module fp_mac (
   wire       [31:0]   subnorm_num;
   wire       [31:0]   z;
   reg        [22:0]   tmp_io_z;
-  wire                when_fp_mac_l196;
+  wire                when_fp_mac_l254;
   function [22:0] zz_tmp_io_z(input dummy);
     begin
       zz_tmp_io_z = 23'h000000;
@@ -386,30 +421,26 @@ module fp_mac (
   assign tmp_b_hidden = (b_exp != 8'h00);
   assign tmp_c_hidden = (c_exp != 8'h00);
   assign tmp_product_exp = (a_exp + b_exp);
-  assign tmp_product_man = ({24'd0,tmp_product_man_1} <<< 5'd24);
-  assign tmp_product_man_2 = (a_man_1 * b_man_1);
-  assign tmp_product_man_1 = {24'd0, tmp_product_man_2};
   assign tmp_c_man_ext = ({24'd0,tmp_c_man_ext_1} <<< 5'd24);
-  assign tmp_c_man_ext_1 = {48'd0, c_man_1};
-  assign tmp_c_man_shift = (c_man_ext >>> exp_diff);
-  assign tmp_product_shift = (product_man >>> exp_diff);
+  assign tmp_c_man_ext_1 = {48'd0, c_man_1_r1};
+  assign tmp_product_man = ({24'd0,tmp_product_man_1} <<< 5'd24);
+  assign tmp_product_man_2 = man_booth4_io_z;
+  assign tmp_product_man_1 = {24'd0, tmp_product_man_2};
+  assign tmp_c_man_shift = (c_man_ext >>> exp_diff_r1);
+  assign tmp_product_shift = (product_man >>> exp_diff_r1);
   assign tmp_c_man_align = ({23'd0,c_man_shift} <<< 5'd23);
-  assign tmp_prod_mag_s = {1'd0, product_shift};
-  assign tmp_c_mag_s = {1'd0, c_man_align};
+  assign tmp_prod_mag_s = {1'd0, product_man_align_r2};
+  assign tmp_c_mag_s = {1'd0, c_man_align_r2};
   assign tmp_prod_val = (- prod_mag_s);
   assign tmp_c_val = (- c_mag_s);
   assign tmp_sum_man = {{1{prod_val[72]}}, prod_val};
   assign tmp_sum_man_1 = {{1{c_val[72]}}, c_val};
-  assign tmp_sum_man_abs = (tmp_sum_man_abs_1 + tmp_sum_man_abs_3);
-  assign tmp_sum_man_abs_1 = (sum_man[73] ? tmp_sum_man_abs_2 : sum_man);
-  assign tmp_sum_man_abs_2 = (~ sum_man);
-  assign tmp_sum_man_abs_4 = sum_man[73];
-  assign tmp_sum_man_abs_3 = {73'd0, tmp_sum_man_abs_4};
-  assign tmp_sum_man_overflow = (tmp_sum_man_overflow_1 + tmp_sum_man_overflow_3);
-  assign tmp_sum_man_overflow_1 = (sum_man[73] ? tmp_sum_man_overflow_2 : sum_man);
-  assign tmp_sum_man_overflow_2 = (~ sum_man);
-  assign tmp_sum_man_overflow_4 = sum_man[73];
-  assign tmp_sum_man_overflow_3 = {73'd0, tmp_sum_man_overflow_4};
+  assign tmp_sum_man_abs_all = (sum_man[73] ? tmp_sum_man_abs_all_1 : sum_man);
+  assign tmp_sum_man_abs_all_1 = (~ sum_man);
+  assign tmp_sum_man_abs_all_3 = sum_man[73];
+  assign tmp_sum_man_abs_all_2 = {73'd0, tmp_sum_man_abs_all_3};
+  assign tmp_sum_man_sign_r3 = 74'h0000000000000000000;
+  assign tmp_sum_man_sign_r3_1 = 74'h0000000000000000000;
   assign tmp_sum_man_vec_0 = sum_man_abs;
   assign tmp_sum_man_vec_1 = sum_man_abs;
   assign tmp_sum_man_vec_2 = sum_man_abs;
@@ -483,30 +514,23 @@ module fp_mac (
   assign tmp_sum_man_vec_70 = sum_man_abs;
   assign tmp_sum_man_vec_71 = sum_man_abs;
   assign tmp_lzc_real = lzc;
-  assign tmp_norm_man_1 = (tmp_norm_man_2[72 : 0] >>> 1'd1);
+  assign tmp_norm_man_1 = (sum_man_abs_all_r4[72 : 0] >>> 1'd1);
   assign tmp_norm_man = tmp_norm_man_1;
-  assign tmp_norm_man_2 = (tmp_norm_man_3 + tmp_norm_man_5);
-  assign tmp_norm_man_3 = (sum_man[73] ? tmp_norm_man_4 : sum_man);
-  assign tmp_norm_man_4 = (~ sum_man);
-  assign tmp_norm_man_6 = sum_man[73];
-  assign tmp_norm_man_5 = {73'd0, tmp_norm_man_6};
-  assign tmp_norm_man_8 = ({127'd0,sum_man_abs} <<< lzc_real);
-  assign tmp_norm_man_7 = tmp_norm_man_8[71:0];
+  assign tmp_norm_man_3 = ({127'd0,sum_man_abs_r4} <<< lzc_real_r4);
+  assign tmp_norm_man_2 = tmp_norm_man_3[71:0];
   assign tmp_result_exp = (tmp_result_exp_1 + tmp_result_exp_3);
-  assign tmp_result_exp_1 = (product_exp_shift - tmp_result_exp_2);
-  assign tmp_result_exp_2 = {1'd0, lzc_real};
+  assign tmp_result_exp_1 = (product_exp_shift_r4 - tmp_result_exp_2);
+  assign tmp_result_exp_2 = {1'd0, lzc_real_r4};
   assign tmp_result_exp_4 = norm_man[71];
   assign tmp_result_exp_3 = {7'd0, tmp_result_exp_4};
-  assign tmp_result_exp_6 = sum_man_overflow;
+  assign tmp_result_exp_6 = sum_man_overflow_r4;
   assign tmp_result_exp_5 = {7'd0, tmp_result_exp_6};
-  assign tmp_result_sign = 74'h0000000000000000000;
-  assign tmp_when_fp_mac_l151 = 74'h0000000000000000000;
   assign tmp_round_up_1 = tmp_round_up;
   assign tmp_man_rounded_1 = round_up;
   assign tmp_man_rounded = {22'd0, tmp_man_rounded_1};
   assign tmp_exp_final_1 = man_overflow;
   assign tmp_exp_final = {7'd0, tmp_exp_final_1};
-  assign tmp_norm_num = {{result_sign,exp_final},man_final};
+  assign tmp_norm_num = {{sum_man_sign_r4,exp_final},man_final};
   assign tmp_subnorm_num_1 = {{sub_sign,8'h00},man_final};
   assign tmp_subnorm_num = tmp_subnorm_num_1;
   assign tmp_found_71 = ((((((((((((((((tmp_found_72 || tmp_found_41) || tmp_found_42) || tmp_found_43) || tmp_found_44) || tmp_found_45) || tmp_found_46) || tmp_found_47) || tmp_found_48) || tmp_found_49) || tmp_found_50) || tmp_found_51) || tmp_found_52) || tmp_found_53) || tmp_found_54) || tmp_found_55) || tmp_found_56);
@@ -525,6 +549,12 @@ module fp_mac (
   assign tmp_lzc_9 = (tmp_found_55 ? 7'h37 : (tmp_found_56 ? 7'h38 : (tmp_found_57 ? 7'h39 : (tmp_found_58 ? 7'h3a : (tmp_found_59 ? 7'h3b : (tmp_found_60 ? 7'h3c : (tmp_found_61 ? 7'h3d : (tmp_found_62 ? 7'h3e : (tmp_found_63 ? 7'h3f : (tmp_found_64 ? 7'h40 : (tmp_found_65 ? tmp_lzc_10 : tmp_lzc_11)))))))))));
   assign tmp_lzc_10 = 7'h41;
   assign tmp_lzc_11 = (tmp_found_66 ? 7'h42 : (tmp_found_67 ? 7'h43 : (tmp_found_68 ? 7'h44 : (tmp_found_69 ? 7'h45 : (tmp_found_70 ? 7'h46 : 7'h47)))));
+  mult_booth4 man_booth4 (
+    .io_a  (man_booth4_io_a[23:0]), //i
+    .io_b  (man_booth4_io_b[23:0]), //i
+    .io_tc (1'b0                 ), //i
+    .io_z  (man_booth4_io_z[47:0])  //o
+  );
   assign a_sign = io_a[31];
   assign b_sign = io_b[31];
   assign c_sign = io_c[31];
@@ -567,13 +597,15 @@ module fp_mac (
     end
   end
 
-  assign product_man = tmp_product_man[71:0];
+  assign man_booth4_io_a = a_man_1_r1;
+  assign man_booth4_io_b = b_man_1_r1;
   assign c_man_ext = tmp_c_man_ext[71:0];
+  assign product_man = tmp_product_man[71:0];
   always @(*) begin
-    if(exp_diff_dir) begin
+    if(exp_diff_dir_r1) begin
       product_shift = product_man;
     end else begin
-      if(when_fp_mac_l100) begin
+      if(when_fp_mac_l127) begin
         product_shift = tmp_product_shift;
       end else begin
         product_shift = 72'h000000000000000000;
@@ -581,10 +613,10 @@ module fp_mac (
     end
   end
 
-  assign when_fp_mac_l93 = (exp_diff < 8'h30);
+  assign when_fp_mac_l120 = (exp_diff_r1 < 8'h30);
   always @(*) begin
-    if(exp_diff_dir) begin
-      if(when_fp_mac_l93) begin
+    if(exp_diff_dir_r1) begin
+      if(when_fp_mac_l120) begin
         c_man_shift = tmp_c_man_shift;
       end else begin
         c_man_shift = 72'h000000000000000000;
@@ -594,16 +626,17 @@ module fp_mac (
     end
   end
 
-  assign when_fp_mac_l100 = (exp_diff < 8'h30);
+  assign when_fp_mac_l127 = (exp_diff_r1 < 8'h30);
   assign c_man_align = tmp_c_man_align[71:0];
-  assign product_exp_shift = (exp_diff_dir ? product_exp : c_exp);
+  assign product_exp_shift = (exp_diff_dir_r1 ? product_exp_r1 : c_exp_r1);
   assign prod_mag_s = tmp_prod_mag_s;
   assign c_mag_s = tmp_c_mag_s;
-  assign prod_val = (product_sign ? tmp_prod_val : prod_mag_s);
-  assign c_val = (c_sign ? tmp_c_val : c_mag_s);
+  assign prod_val = (product_sign_r2 ? tmp_prod_val : prod_mag_s);
+  assign c_val = (c_sign_r2 ? tmp_c_val : c_mag_s);
   assign sum_man = ($signed(tmp_sum_man) + $signed(tmp_sum_man_1));
-  assign sum_man_abs = tmp_sum_man_abs[71 : 0];
-  assign sum_man_overflow = tmp_sum_man_overflow[72];
+  assign sum_man_abs_all = (tmp_sum_man_abs_all + tmp_sum_man_abs_all_2);
+  assign sum_man_abs = sum_man_abs_all_r3[71 : 0];
+  assign sum_man_overflow = sum_man_abs_all_r3[72];
   assign sum_man_vec_0 = tmp_sum_man_vec_0[71];
   assign sum_man_vec_1 = tmp_sum_man_vec_1[70];
   assign sum_man_vec_2 = tmp_sum_man_vec_2[69];
@@ -753,17 +786,11 @@ module fp_mac (
   assign lzc_large_subnormal = ((7'h30 <= lzc_real) && (lzc_real < 7'h48));
   assign lzc_huge_zero = (7'h48 <= lzc_real);
   assign lzc_normal = (lzc_real < 7'h30);
-  assign norm_man = (sum_man_overflow ? tmp_norm_man : tmp_norm_man_7);
+  assign sum_man_abs_r4 = sum_man_abs_all_r4[71 : 0];
+  assign sum_man_overflow_r4 = sum_man_abs_all_r4[72];
+  assign norm_man = (sum_man_overflow_r4 ? tmp_norm_man : tmp_norm_man_2);
   assign result_exp = (tmp_result_exp + tmp_result_exp_5);
   assign result_man = norm_man[71 : 48];
-  always @(*) begin
-    result_sign = ($signed(sum_man) < $signed(tmp_result_sign));
-    if(when_fp_mac_l151) begin
-      result_sign = 1'b0;
-    end
-  end
-
-  assign when_fp_mac_l151 = ($signed(sum_man) == $signed(tmp_when_fp_mac_l151));
   assign guard_bit = norm_man[47];
   assign round_bit = norm_man[46];
   assign sticky_bit = (|norm_man[45 : 24]);
@@ -776,10 +803,10 @@ module fp_mac (
         tmp_round_up = 1'b0;
       end
       3'b010 : begin
-        tmp_round_up = (result_sign && ((guard_bit || round_bit) || sticky_bit));
+        tmp_round_up = (sum_man_sign_r4 && ((guard_bit || round_bit) || sticky_bit));
       end
       3'b011 : begin
-        tmp_round_up = ((! result_sign) && ((guard_bit || round_bit) || sticky_bit));
+        tmp_round_up = ((! sum_man_sign_r4) && ((guard_bit || round_bit) || sticky_bit));
       end
       3'b100 : begin
         tmp_round_up = (guard_bit && (round_bit || sticky_bit));
@@ -796,35 +823,74 @@ module fp_mac (
   assign exp_final = (result_exp[7 : 0] + tmp_exp_final);
   assign man_final = ((&exp_final) ? 23'h000000 : man_rounded);
   assign norm_num = tmp_norm_num;
-  assign sub_sign = (result_sign && (|man_final));
-  assign subnorm_num = (lzc_huge_zero ? 32'h00000000 : tmp_subnorm_num);
-  assign z = (lzc_normal ? norm_num : subnorm_num);
+  assign sub_sign = (sum_man_sign_r4 && (|man_final));
+  assign subnorm_num = (lzc_huge_zero_r4 ? 32'h00000000 : tmp_subnorm_num);
+  assign z = (lzc_normal_r4 ? norm_num : subnorm_num);
   assign tmp_1 = zz_tmp_io_z(1'b0);
   always @(*) tmp_io_z = tmp_1;
-  always @(*) begin
-    if(output_nan_inf) begin
-      io_z = {{1'b0,8'hff},tmp_io_z};
+  assign when_fp_mac_l254 = (a_b_inf_r4 || c_is_inf_r4);
+  always @(posedge clk) begin
+    a_man_1_r1 <= a_man_1;
+    b_man_1_r1 <= b_man_1;
+    c_man_1_r1 <= c_man_1;
+    exp_diff_dir_r1 <= exp_diff_dir;
+    exp_diff_r1 <= exp_diff;
+    product_exp_r1 <= product_exp;
+    c_exp_r1 <= c_exp;
+    product_sign_r1 <= product_sign;
+    c_sign_r1 <= c_sign;
+    output_nan_inf_r1 <= output_nan_inf;
+    inf_sign_r1 <= inf_sign;
+    a_b_inf_r1 <= a_b_inf;
+    c_is_inf_r1 <= c_is_inf;
+    c_man_align_r2 <= c_man_align;
+    product_exp_shift_r2 <= product_exp_shift;
+    product_man_align_r2 <= product_shift;
+    product_sign_r2 <= product_sign_r1;
+    c_sign_r2 <= c_sign_r1;
+    output_nan_inf_r2 <= output_nan_inf_r1;
+    inf_sign_r2 <= inf_sign_r1;
+    a_b_inf_r2 <= a_b_inf_r1;
+    c_is_inf_r2 <= c_is_inf_r1;
+    sum_man_abs_all_r3 <= sum_man_abs_all;
+    product_exp_shift_r3 <= product_exp_shift_r2;
+    output_nan_inf_r3 <= output_nan_inf_r2;
+    inf_sign_r3 <= inf_sign_r2;
+    a_b_inf_r3 <= a_b_inf_r2;
+    c_is_inf_r3 <= c_is_inf_r2;
+    sum_man_sign_r3 <= (($signed(sum_man) < $signed(tmp_sum_man_sign_r3)) && (! ($signed(sum_man) == $signed(tmp_sum_man_sign_r3_1))));
+    lzc_real_r4 <= lzc_real;
+    sum_man_abs_all_r4 <= sum_man_abs_all_r3;
+    product_exp_shift_r4 <= product_exp_shift_r3;
+    output_nan_inf_r4 <= output_nan_inf_r3;
+    inf_sign_r4 <= inf_sign_r3;
+    a_b_inf_r4 <= a_b_inf_r3;
+    c_is_inf_r4 <= c_is_inf_r3;
+    sum_man_sign_r4 <= sum_man_sign_r3;
+    lzc_large_subnormal_r4 <= lzc_large_subnormal;
+    lzc_huge_zero_r4 <= lzc_huge_zero;
+    lzc_normal_r4 <= lzc_normal;
+  end
+
+  always @(posedge clk or negedge resetn) begin
+    if(!resetn) begin
+      io_z <= 32'h00000000;
+      io_status <= 8'h00;
     end else begin
-      if(when_fp_mac_l196) begin
-        io_z = {{inf_sign,8'hff},23'h000000};
+      if(output_nan_inf_r4) begin
+        io_z <= {{1'b0,8'hff},tmp_io_z};
+        io_status <= 8'h01;
       end else begin
-        io_z = z;
+        if(when_fp_mac_l254) begin
+          io_z <= {{inf_sign_r4,8'hff},23'h000000};
+          io_status <= 8'h02;
+        end else begin
+          io_z <= z;
+          io_status <= 8'h00;
+        end
       end
     end
   end
 
-  always @(*) begin
-    if(output_nan_inf) begin
-      io_status = 8'h01;
-    end else begin
-      if(when_fp_mac_l196) begin
-        io_status = 8'h02;
-      end else begin
-        io_status = 8'h00;
-      end
-    end
-  end
-
-  assign when_fp_mac_l196 = (a_b_inf || c_is_inf);
 
 endmodule

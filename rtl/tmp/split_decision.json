@@ -1,0 +1,68 @@
+{
+  "split_decisions": [
+    {
+      "file": "rtl/CLA.sv",
+      "module": "CLA",
+      "line_count": 1787,
+      "exceeds_max_lines": true,
+      "needs_split": true,
+      "reason": "Exceeds 1000 lines per file constraint",
+      "split_strategy": "hierarchical",
+      "proposed_split": [
+        {
+          "new_module": "CLA_4bit",
+          "description": "4-bit carry lookahead unit",
+          "instances_needed": 13,
+          "estimated_lines": 150
+        },
+        {
+          "new_module": "CLA_combine",
+          "description": "Top-level CLA combining 4-bit units",
+          "instances_needed": 1,
+          "estimated_lines": 200
+        }
+      ],
+      "action": "Split into multiple smaller modules: CLA_4bit (reusable) and CLA_combine (top-level)."
+    },
+    {
+      "file": "rtl/fp_mac.sv",
+      "module": "fp_mac",
+      "line_count": 891,
+      "exceeds_max_lines": false,
+      "needs_split": false,
+      "reason": "Within line limit, already uses submodules appropriately",
+      "split_strategy": "none"
+    },
+    {
+      "file": "rtl/mult_booth4.sv",
+      "module": "mult_booth4",
+      "line_count": 762,
+      "exceeds_max_lines": false,
+      "needs_split": false,
+      "reason": "Within line limit, uses wallace_tree submodule",
+      "split_strategy": "none"
+    },
+    {
+      "file": "rtl/wallace_tree.sv",
+      "module": "wallace_tree",
+      "line_count": 191,
+      "exceeds_max_lines": false,
+      "needs_split": false,
+      "reason": "Within line limit, uses csa_3t2 and CLA submodules",
+      "split_strategy": "none"
+    },
+    {
+      "file": "rtl/csa_3t2.sv",
+      "module": "csa_3t2",
+      "line_count": 15,
+      "exceeds_max_lines": false,
+      "needs_split": false,
+      "reason": "Small module, no need to split",
+      "split_strategy": "none"
+    }
+  ],
+  "overall_recommendation": "Split only CLA.sv due to line count constraint. Other modules are well-structured and within limits.",
+  "constraints": {
+    "max_lines_per_file": 1000
+  }
+}

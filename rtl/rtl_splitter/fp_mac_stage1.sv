@@ -33,7 +33,7 @@ module fp_mac_stage1 (
   output wire [23:0] b_man_1,
   output wire [23:0] c_man_1,
   output wire        exp_diff_dir,
-  output wire [7:0]  exp_diff,
+  output reg [7:0]  exp_diff,
   output wire [7:0]  product_exp,
   output wire        product_sign,
   output wire        c_sign,
@@ -50,7 +50,6 @@ module fp_mac_stage1 (
   wire       [7:0]    tmp_product_exp;
   wire                a_sign;
   wire                b_sign;
-  wire                c_sign;
   wire       [7:0]    a_exp;
   wire       [7:0]    b_exp;
   wire       [7:0]    c_exp;
@@ -60,26 +59,18 @@ module fp_mac_stage1 (
   wire       [0:0]    a_hidden;
   wire       [0:0]    b_hidden;
   wire       [0:0]    c_hidden;
-  wire                product_sign;
   wire       [7:0]    exp_all_one;
   wire                a_is_inf;
   wire                b_is_inf;
-  wire                c_is_inf;
   wire                a_is_nan;
   wire                b_is_nan;
   wire                c_is_nan;
   wire                output_nan;
-  wire                a_b_inf;
   wire                a_zero;
   wire                b_zero;
   wire                inf_x_zero;
   wire                prod_is_inf;
   wire                inf_cancel;
-  wire                output_nan_inf;
-  wire                inf_sign;
-  wire       [7:0]    product_exp;
-  wire                exp_diff_dir;
-  reg        [7:0]    exp_diff;
 
   // Combinational logic from original fp_mac.sv
   assign tmp_a_hidden = (a_exp != 8'h00);

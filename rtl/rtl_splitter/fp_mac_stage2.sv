@@ -38,7 +38,7 @@ module fp_mac_stage2 (
   // Internal signals (combinational)
   output wire [71:0] c_man_align,
   output wire [7:0]  product_exp_shift,
-  output wire [71:0] product_shift,
+  output reg [71:0] product_shift,
   output wire        product_sign,
   output wire        c_sign,
   output wire        output_nan_inf,
@@ -91,7 +91,6 @@ module fp_mac_stage2 (
   assign when_fp_mac_l127 = (exp_diff_r1 < 8'h30);
 
   // product_shift always block
-  reg [71:0] product_shift;
   always @(*) begin
     if (exp_diff_dir_r1) begin
       product_shift = product_man;

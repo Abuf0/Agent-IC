@@ -1,6 +1,13 @@
 {
+  "enableAutoMode": true,
   "permissions": {
+    "defaultMode": "auto",
+    "initialPermissionMode": "auto",
     "allow": [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
       "Bash(npm run *)",
       "Bash(pytest:*)",
       "Bash(git diff:*)",
@@ -9,6 +16,32 @@
     "deny": [
       "Bash(rm -rf *)",
       "Bash(curl * | bash)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/rm-safe.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/bash-write-safe.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/edit-safe.sh"
+          }
+        ]
+      }
     ]
   }
 }

@@ -1,6 +1,27 @@
 // fp_mac_stage2.sv
 // Stage 2: 乘法器实例、尾数对齐、指数差计算
 // Generated from fp_mac.sv as part of code split
+//
+// ============================================================================
+// Stage 2: Multiplication and Alignment
+// ============================================================================
+// Function:
+//   - Instantiates 24x24 Booth-4 multiplier (mult_booth4) for mantissa product.
+//   - Aligns C mantissa with product based on exponent difference.
+//   - Selects larger exponent for next stage.
+//
+// Pipeline:
+//   Inputs: Registered outputs from Stage 1 (a_man_1_r1, b_man_1_r1, etc.)
+//   Outputs: Registered aligned mantissas, exponents, and control signals.
+//
+// Key Operations:
+//   1. Mantissa multiplication: a_man_1_r1 * b_man_1_r1 → 48-bit product.
+//   2. Alignment shift: Right-shift smaller operand by exponent difference.
+//   3. Exponent selection: Larger exponent passes to next stage.
+//
+// Dependencies: mult_booth4 module (must be available in search path).
+// ============================================================================
+
 
 `timescale 1ns/1ps
 
@@ -65,6 +86,7 @@ module fp_mac_stage2 (
   wire                when_fp_mac_l127;
 
   // Multiplier instantiation
+  //   - Uses 24x24 Booth-4 multiplier with unsigned mantissas (hidden bit included).  //   - io_tc tied to 0 (unsigned multiplication).  //   - Output is 48-bit product, zero-extended to 72-bit for alignment.
   mult_booth4 man_booth4 (
     .io_a  (man_booth4_io_a[23:0]), //i
     .io_b  (man_booth4_io_b[23:0]), //i

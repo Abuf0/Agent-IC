@@ -1,6 +1,31 @@
 // fp_mac_stage4.sv
 // Stage 4: 规格化、舍入、溢出处理、输出选择
 // Generated from fp_mac.sv as part of code split
+//
+// ============================================================================
+// Stage 4: Normalization, Rounding, and Result Packing
+// ============================================================================
+// Function:
+//   - Normalizes mantissa using LZC result (left shift).
+//   - Adjusts exponent based on normalization shift.
+//   - Performs rounding according to IEEE 754 rounding modes.
+//   - Handles mantissa overflow and exponent increment.
+//   - Selects final result: normal, subnormal, or zero.
+//   - Packs sign, exponent, mantissa into 32-bit floating-point format.
+//   - Generates status flags (NaN, Inf, etc.) for special cases.
+//
+// Pipeline:
+//   Inputs: Absolute sum, LZC, exponents, signs from Stage 3.
+//   Outputs: Final 32-bit result io_z and status io_status.
+//
+// Key Operations:
+//   1. Normalization shift (left shift by LZC).
+//   2. Rounding decision based on guard, round, sticky bits.
+//   3. Exponent adjustment for normalization and rounding overflow.
+//   4. Subnormal handling (large shift) and zero detection.
+//   5. Final result multiplexing (normal, subnormal, special).
+// ============================================================================
+
 
 `timescale 1ns/1ps
 

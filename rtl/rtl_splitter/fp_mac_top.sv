@@ -2,6 +2,29 @@
 // Top-level module integrating all pipeline stages
 // Generated from fp_mac.sv as part of code split
 // This module replaces the original fp_mac module
+//
+// ============================================================================
+// Top-Level FP_MAC Module (Integrated Pipeline)
+// ============================================================================
+// Function:
+//   - Instantiates all four pipeline stages and connects them.
+//   - Provides same interface as original fp_mac module.
+//   - Maintains 4-cycle latency from input to output.
+//
+// Pipeline Stages:
+//   1. Stage 1: Input decode, special case detection, exponent calculation.
+//   2. Stage 2: Mantissa multiplication (Booth4), alignment shift.
+//   3. Stage 3: Addition, sign handling, leading zero count (LZC).
+//   4. Stage 4: Normalization, rounding, final result packing.
+//
+// Interface:
+//   Same as original fp_mac: io_a, io_b, io_c, io_rnd, io_z, io_status, clk, resetn.
+//
+// Dependencies:
+//   - fp_mac_stage1.sv, fp_mac_stage2.sv, fp_mac_stage3.sv, fp_mac_stage4.sv
+//   - mult_booth4.sv (via stage2)
+// ============================================================================
+
 
 `timescale 1ns/1ps
 

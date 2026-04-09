@@ -1,0 +1,46 @@
+{
+  "splits": [
+    {
+      "file": "rtl/rtl_splitter_new/fp_mac_top.sv",
+      "include_modules": ["fp_mac_top"],
+      "lines": 300,
+      "description": "Top-level wrapper with all wire declarations, pipeline registers, and submodule instantiations"
+    },
+    {
+      "file": "rtl/rtl_splitter_new/fp_mac_input_decode.sv",
+      "include_modules": ["fp_mac_input_decode"],
+      "lines": 150,
+      "description": "Input decoding, special value detection (NaN, infinity, zero), sign and exponent computation"
+    },
+    {
+      "file": "rtl/rtl_splitter_new/fp_mac_align.sv",
+      "include_modules": ["fp_mac_align"],
+      "lines": 100,
+      "description": "Exponent difference calculation, mantissa alignment shifting"
+    },
+    {
+      "file": "rtl/rtl_splitter_new/fp_mac_add.sv",
+      "include_modules": ["fp_mac_add"],
+      "lines": 200,
+      "description": "Sign-magnitude addition, result sign processing, leading-zero counting (LZC)"
+    },
+    {
+      "file": "rtl/rtl_splitter_new/fp_mac_norm_round.sv",
+      "include_modules": ["fp_mac_norm_round"],
+      "lines": 150,
+      "description": "Normalization, rounding, overflow handling"
+    },
+    {
+      "file": "rtl/rtl_splitter_new/fp_mac_output.sv",
+      "include_modules": ["fp_mac_output"],
+      "lines": 100,
+      "description": "Output selection (normal, subnormal, infinity, NaN) and final output registers"
+    }
+  ],
+  "warnings": [
+    "Existing split files in rtl/rtl_splitter/ will be preserved. New split will be placed in rtl/rtl_splitter_new/",
+    "Multiplier module mult_booth4 already exists as separate file and will be reused",
+    "Pipeline registers will be kept in the top-level module to maintain timing structure",
+    "Some wire declarations may need to be moved to appropriate submodules"
+  ]
+}

@@ -1,6 +1,27 @@
 // fp_mac_stage3.sv
 // Stage 3: 加法、符号处理、前导零计数(LZC)
 // Generated from fp_mac.sv as part of code split
+//
+// ============================================================================
+// Stage 3: Addition and Leading Zero Count (LZC)
+// ============================================================================
+// Function:
+//   - Adds aligned product mantissa and C mantissa (72-bit addition).
+//   - Handles sign of operands and computes absolute value of sum.
+//   - Performs leading zero count (LZC) on absolute sum for normalization.
+//   - Detects overflow (extra bit) and determines normalization direction.
+//
+// Pipeline:
+//   Inputs: Aligned mantissas, exponents, signs from Stage 2.
+//   Outputs: Absolute sum, LZC result, overflow flag, control signals.
+//
+// Key Operations:
+//   1. Signed addition of product and C mantissas.
+//   2. Absolute value conversion and overflow detection.
+//   3. Leading zero count via priority encoder (72-bit).
+//   4. Classification: normal, large subnormal, huge zero (based on LZC).
+// ============================================================================
+
 
 `timescale 1ns/1ps
 

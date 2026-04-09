@@ -3,6 +3,29 @@
 // Git hash  : c982d0aac03e1ed897d6c33309713a5773bade24
 
 `timescale 1ns/1ps 
+
+// ============================================================================
+// Floating-Point Multiply-Accumulate (FMA) Unit
+// ============================================================================
+// Module: fp_mac
+// Function: Computes (A * B) + C with IEEE 754 single-precision (32-bit) format.
+// Supports all rounding modes, special values (NaN, Inf, zero), subnormals.
+// Pipeline: 4 stages
+//   Stage 1: Input decode, special case detection, exponent calculation
+//   Stage 2: Mantissa multiplication (Booth4 multiplier), alignment shift
+//   Stage 3: Addition, sign handling, leading zero count (LZC)
+//   Stage 4: Normalization, rounding, final result packing
+//
+// Interface:
+//   io_a, io_b, io_c: 32-bit floating-point inputs (sign + 8-bit exp + 23-bit frac)
+//   io_rnd: 3-bit rounding mode (IEEE 754)
+//   io_z: 32-bit result
+//   io_status: 8-bit status flags
+//   clk, resetn: global clock and active-low reset
+//
+// Dependencies: mult_booth4.sv (24x24 Booth-4 multiplier)
+// ============================================================================
+
 module fp_mac (
   input      [31:0]   io_a,
   input      [31:0]   io_b,

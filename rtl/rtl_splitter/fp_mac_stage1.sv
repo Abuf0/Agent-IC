@@ -1,6 +1,28 @@
 // fp_mac_stage1.sv
 // Stage 1: 输入解码、特殊值处理、指数计算、隐藏位添加
 // Generated from fp_mac.sv as part of code split
+//
+// ============================================================================
+// Stage 1: Input Decode and Special Case Handling
+// ============================================================================
+// Function:
+//   - Extracts sign, exponent, mantissa from IEEE 754 inputs.
+//   - Adds hidden bit to mantissas for normalized numbers.
+//   - Detects special values: NaN, Infinity, Zero.
+//   - Computes product sign, exponent sum, exponent difference.
+//   - Checks for NaN propagation, infinity cancellation, zero multiplication.
+//
+// Pipeline:
+//   Inputs: Raw floating-point inputs io_a, io_b, io_c.
+//   Outputs: Registered mantissas, exponents, signs, control signals.
+//
+// Key Operations:
+//   1. Sign extraction and product sign calculation (a_sign ^ b_sign).
+//   2. Exponent sum and bias adjustment.
+//   3. Hidden bit addition based on exponent zero (subnormal handling).
+//   4. Special case flags (NaN, Inf, zero) and exception detection.
+// ============================================================================
+
 
 `timescale 1ns/1ps
 

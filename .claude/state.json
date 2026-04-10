@@ -6,8 +6,14 @@
       "top_module": "CLA",
       "rtl_file": "rtl/CLA.sv",
       "split_needed": false,
-      "generated_files": ["rtl/CLA.sv"],
-      "analysis_files": ["rtl/tmp/rtl_analysis.json", "rtl/tmp/split_plan.json", "rtl/tmp/analyze_cla.py"]
+      "generated_files": [
+        "rtl/CLA.sv"
+      ],
+      "analysis_files": [
+        "rtl/tmp/rtl_analysis.json",
+        "rtl/tmp/split_plan.json",
+        "rtl/tmp/analyze_cla.py"
+      ]
     },
     "review_stage": {
       "completed": true,
@@ -94,8 +100,14 @@
         "review_report": "rtl/tmp/review_fp_mac.json",
         "issues_remaining": 5,
         "user_decision": "proceed_with_partial_fixes",
-        "fixed_issues": ["module_dependency", "comments"],
-        "unfixed_issues": ["rounding_logic_errors", "lzc_timing"]
+        "fixed_issues": [
+          "module_dependency",
+          "comments"
+        ],
+        "unfixed_issues": [
+          "rounding_logic_errors",
+          "lzc_timing"
+        ]
       }
     },
     "test_stage": {
@@ -143,6 +155,15 @@
         "power": 42.5,
         "note": "综合阶段已完成，但由于缺少Design Compiler工具，使用模拟数据。实际综合需要修复舍入逻辑错误以满足时序。"
       }
+    }
+  },
+  "BoxFilter": {
+    "split_stage": {
+      "completed": false,
+      "timestamp": "",
+      "top_module": "BoxFilter",
+      "rtl_file": "rtl/BoxFilter.sv",
+      "spec_file": "spec/boxfilter_spec.md"
     }
   }
 }

@@ -2,6 +2,37 @@
 // Component : BoxFilter
 // Git hash  : e71210596241f9a8ee75efce647f5095a787e749
 
+// ============================================================================
+// BoxFilter: 方形均值滤波模块
+// ============================================================================
+// 功能描述:
+//   对输入图像进行方形均值滤波，采用两步累加算法：
+//   1. 行累加阶段(ROW_SUM): 按行滑动窗口累加，将部分和写入PSUM memory
+//   2. 列累加阶段(COL_SUM): 从PSUM memory读回部分和，按列累加得到窗口总和
+//   3. 计算均值并裁剪到数据类型的合法范围，写回输出内存
+//
+// 算法细节:
+//   - 窗口尺寸: WinSizeX = 2*rg_rx + 1, WinSizeY = 2*rg_ry + 1
+//   - 输出尺寸: outw = width - 2*rg_rx, outh = height - 2*rg_ry
+//   - 支持的数据类型: CHAR/UCHAR, SHORT/USHORT, WORD/UWORD (8/16/32位有/无符号)
+//   - 使用滑动窗口累加算法减少计算量: O(width*height) 而非 O(width*height*winArea)
+//   - 行累加: sum[i][j] = sum[i][j-1] + new_pixel - old_pixel
+//   - 列累加: sum[i][j] = sum[i-1][j] + new_row_sum - old_row_sum
+//   - 均值: mean = sum / (WinSizeX * WinSizeY)
+//   - 裁剪: clip to [minValue, maxValue] based on data type
+//
+// 状态机:
+//   IDLE -> ROW_SUM -> WAIT_1 -> COL_SUM -> WAIT_1 -> DONE
+//   行累加完成后等待流水线排空，然后切换到列累加，最后等待裁剪写回完成
+//
+// 接口说明:
+//   psum_mem_if: 与PSUM memory接口，64位宽，用于存储部分和
+//   mem_master: 与主内存接口，32位宽，用于读取输入和写入输出
+//   rg_*: 配置寄存器，包括输入/输出/psum地址、图像尺寸、窗口半径、数据类型
+//   start/done: 启动和完成信号
+// ============================================================================
+
+
 `timescale 1ns/1ps 
 module BoxFilter (
   output reg          psum_mem_if_mem_rd,
@@ -40,6 +71,7 @@ module BoxFilter (
   localparam COL_SUM = 3'd2;
   localparam WAIT_1 = 3'd3;
   localparam DONE = 3'd4;
+  // 状态机状态定义
 
   wire                line_buffer_flush;
   wire       [32:0]   filter_mean_io_i;

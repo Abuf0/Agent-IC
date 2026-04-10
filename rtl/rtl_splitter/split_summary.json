@@ -1,0 +1,7 @@
+{
+  "original_file": "D:/Learn/Agent/Agent-IC/rtl/BoxFilter/BoxFilter.sv",
+  "copied_to": "D:/Learn/Agent/Agent-IC/rtl/rtl_splitter/BoxFilter.sv",
+  "always_blocks_found": 4,
+  "sequential_blocks": 1,
+  "combinational_blocks": 3
+}

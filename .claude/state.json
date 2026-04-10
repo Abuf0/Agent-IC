@@ -159,11 +159,22 @@
   },
   "BoxFilter": {
     "split_stage": {
-      "completed": false,
-      "timestamp": "",
+      "completed": true,
+      "timestamp": "2026-04-10",
       "top_module": "BoxFilter",
       "rtl_file": "rtl/BoxFilter.sv",
-      "spec_file": "spec/boxfilter_spec.md"
+      "spec_file": "spec/boxfilter_spec.md",
+      "split_needed": true,
+      "generated_files": [
+        "rtl/rtl_splitter/BoxFilter.sv",
+        "rtl/rtl_splitter/Pipeline_act.sv",
+        "rtl/rtl_splitter/RegQueue.sv",
+        "rtl/rtl_splitter/enumdefine.sv"
+      ],
+      "analysis_files": [
+        "rtl/tmp/rtl_analysis.json",
+        "rtl/tmp/split_plan.json"
+      ]
     }
   }
 }

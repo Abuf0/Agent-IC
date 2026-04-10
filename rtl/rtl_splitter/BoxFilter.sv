@@ -181,6 +181,7 @@ module BoxFilter (
   wire       [28:0]   tmp_mem_master_mem_addr_5;
   wire       [28:0]   tmp_mem_master_mem_addr_6;
   wire       [28:0]   tmp_mem_master_mem_addr_7;
+  wire                config_valid;
   wire       [36:0]   psumType;
   wire       [4:0]    WinSizeX;
   wire       [4:0]    WinSizeY;
@@ -424,6 +425,7 @@ module BoxFilter (
   assign HalfWinArea = ($signed(WinArea_result_reg) >>> 1);
   assign outw = (rg_width - tmp_outw);
   assign outh = (rg_height - tmp_outh);
+  assign config_valid = (rg_width > tmp_outw) && (rg_height > tmp_outh);
   assign state_rowsum = (state == ROW_SUM);
   assign state_colsum = (state == COL_SUM);
   assign state_wait = (state == WAIT_1);
@@ -434,7 +436,7 @@ module BoxFilter (
     state_next = state;
     case(state)
       IDLE : begin
-        if(start) begin
+        if(start && config_valid) begin
           state_next = ROW_SUM;
         end
       end

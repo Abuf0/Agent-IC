@@ -29,8 +29,8 @@
 | rg_dtype      | input | 3    | 数据类型编码: 0=WORD,1=UWORD,2=SHORT,3=USHORT,4=CHAR,5=UCHAR |
 | rg_width      | input | 12   | 输入图像宽度（像素数） |
 | rg_height     | input | 12   | 输入图像高度（像素数） |
-| rg_rx         | input | 4    | 窗口水平半径（0-7） |
-| rg_ry         | input | 4    | 窗口垂直半径（0-7） |
+| rg_rx         | input | 4    | 窗口水平半径（0-15） |
+| rg_ry         | input | 4    | 窗口垂直半径（0-15） |
 
 ### 2.4 PSUM内存接口（64位宽）
 | 信号名 | 方向 | 宽度 | 描述 |
@@ -71,9 +71,9 @@
 | UCHAR    | 5    | 8    | 无     | 0      | 2^8-1  |
 
 ### 3.3 窗口尺寸计算
-- **窗口水平尺寸**: WinSizeX = 2 × rg_rx + 1 (范围: 1~15)
-- **窗口垂直尺寸**: WinSizeY = 2 × rg_ry + 1 (范围: 1~15)
-- **窗口面积**: WinArea = WinSizeX × WinSizeY (范围: 1~225)
+- **窗口水平尺寸**: WinSizeX = 2 × rg_rx + 1 (范围: 1~31)
+- **窗口垂直尺寸**: WinSizeY = 2 × rg_ry + 1 (范围: 1~31)
+- **窗口面积**: WinArea = WinSizeX × WinSizeY (范围: 1~961)
 - **输出图像宽度**: outw = rg_width - 2 × rg_rx (需满足 outw > 0)
 - **输出图像高度**: outh = rg_height - 2 × rg_ry (需满足 outh > 0)
 

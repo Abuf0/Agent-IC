@@ -280,7 +280,15 @@ module BoxFilter (
   assign tmp_read_data_bias = ({3'd0,pixel_index_lsb} <<< dtype_shift);
   assign tmp_filter_sum_vld_1 = (WinSizeY - 5'h01);
   assign tmp_filter_sum_vld = {8'd0, tmp_filter_sum_vld_1};
-  assign tmp_io_i_1 = ($signed(sum) / $signed(WinArea_result_reg));
+  // Division with rounding (round half away from zero)
+  wire signed [63:0] tmp_div_quotient = $signed(sum) / $signed(WinArea_result_reg);
+  wire signed [63:0] tmp_div_remainder = $signed(sum) % $signed(WinArea_result_reg);
+  wire signed [63:0] tmp_half_rounded = $signed({54'd0, HalfWinAreaRound});
+  wire signed [63:0] tmp_rounded_quotient =
+    (tmp_div_remainder >= tmp_half_rounded) ? tmp_div_quotient + 64'd1 :
+    (tmp_div_remainder <= -tmp_half_rounded) ? tmp_div_quotient - 64'd1 :
+    tmp_div_quotient;
+  assign tmp_io_i_1 = tmp_rounded_quotient;
   assign tmp_io_i = tmp_io_i_1[32:0];
   assign tmp_line_st_in_payload = {{4{read_data[32]}}, read_data};
   assign tmp_line_st_in_payload_1 = psum_data;
@@ -423,6 +431,7 @@ module BoxFilter (
   assign WinSizeY = (tmp_WinSizeY + 5'h01);
   assign WinArea = tmp_WinArea;
   assign HalfWinArea = ($signed(WinArea_result_reg) >>> 1);
+  assign HalfWinAreaRound = (WinArea_result_reg + 10'd1) >> 1;
   assign outw = (rg_width - tmp_outw);
   assign outh = (rg_height - tmp_outh);
   assign config_valid = (rg_width > tmp_outw) && (rg_height > tmp_outh);
